@@ -4,11 +4,11 @@
       <div class="flex justify-between h-16 items-center">
         <div class="flex items-center">
           <a href="/" class="inline-flex items-center nav-logo">
-            <img :src="logo" alt="RepairiX" class="h-8 w-8 object-contain" />
+            <img :src="logo" alt="RepairiX" class="h-14 w-14 object-contain" />
           </a>
         </div>
         <div class="flex items-center space-x-4">
-          <a href="#about" class="nav-link">About Us</a>
+          <a href="/about" class="nav-link">About Us</a>
           <a href="/login" class="nav-pill">Login</a>
         </div>
       </div>

@@ -18,6 +18,14 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
+Route::get('/about', function () {
+    $user = Auth::user();
+
+    return Inertia::render('About', [
+        'role' => $user?->role,
+    ]);
+})->name('about');
+
 // Registration pages
 use App\Http\Controllers\Auth\CustomerRegisterController;
 use App\Http\Controllers\Auth\ShopRegisterController;

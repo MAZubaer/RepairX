@@ -30,7 +30,7 @@
               <h2 class="text-2xl font-extrabold">Monthly</h2>
               <p class="mt-1 text-slate-600">Flexible plan for growing repair shops.</p>
               <div class="mt-5 flex items-end gap-2">
-                <span class="text-5xl font-black">৳20</span>
+                <span class="text-5xl font-black">৳499</span>
                 <span class="text-slate-500 mb-2">/month</span>
               </div>
             </div>
@@ -58,7 +58,7 @@
               <h2 class="text-2xl font-extrabold">Yearly</h2>
               <p class="mt-1 text-slate-600">Save more with annual billing.</p>
               <div class="mt-5 flex items-end gap-2">
-                <span class="text-5xl font-black">৳180</span>
+                <span class="text-5xl font-black">৳4999</span>
                 <span class="text-slate-500 mb-2">/year</span>
               </div>
             </div>

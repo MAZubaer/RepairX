@@ -4,13 +4,13 @@
       <div class="flex justify-between h-16 items-center">
         <div class="flex items-center">
           <a href="/dashboard/shop" class="inline-flex items-center nav-logo">
-            <img :src="logo" alt="RepairiX" class="h-8 w-8 object-contain" />
+            <img :src="logo" alt="RepairiX" class="h-14 w-14 object-contain" />
           </a>
         </div>
         <div class="flex items-center space-x-4">
           <a href="/shop/customers" class="nav-link">Customer Management</a>
           <a href="/shop/edit" class="nav-link">Edit Profile</a>
-          <a href="#about" class="nav-link">About Us</a>
+          <a href="/about" class="nav-link">About Us</a>
           <button @click="logout" type="button" class="nav-pill nav-pill-danger">Logout</button>
         </div>
       </div>
