@@ -76,11 +76,7 @@ const stars = computed(() => {
 
 const visibleGallery = computed(() => {
   const src = Array.isArray(props.gallery) ? props.gallery : []
-  const first = src.slice(0, 4)
-  while (first.length < 4) {
-    first.push({ image_id: `placeholder-${first.length + 1}`, url: null })
-  }
-  return first
+  return src.filter((i) => i && i.url)
 })
 </script>
 

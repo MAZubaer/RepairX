@@ -12,6 +12,10 @@ use App\Http\Controllers\ShopCustomerManagementController;
 use App\Http\Controllers\CustomerUpdatesController;
 use App\Http\Controllers\CustomerNotificationController;
 use App\Http\Controllers\ShopBillingController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ShopManagementController as AdminShopManagementController;
+use App\Http\Controllers\Admin\ServiceRequestController as AdminServiceRequestController;
+use App\Http\Controllers\Admin\CustomerManagementController as AdminCustomerManagementController;
 use App\Models\Shop;
 
 Route::get('/', function () {
@@ -40,7 +44,17 @@ Route::post('/register/shop', [ShopRegisterController::class, 'store'])->name('r
 
 Route::get('/login', function () {
     if (Auth::check()) {
-        return redirect()->route(Auth::user()->role === 'shop' ? 'dashboard.shop' : 'dashboard.customer');
+        $role = Auth::user()->role;
+
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($role === 'shop') {
+            return redirect()->route('dashboard.shop');
+        }
+
+        return redirect()->route('dashboard.customer');
     }
 
     return Inertia::render('Auth/Login');
@@ -61,6 +75,11 @@ Route::post('/login', function (Request $request) {
     $request->session()->regenerate();
 
     $user = Auth::user();
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
     if ($user->role === 'shop') {
         $shop = Shop::where('user_id', $user->id)->first();
 
@@ -91,6 +110,20 @@ Route::post('/logout', function (Request $request) {
 Route::get('/dashboard/customer', function () {
     return app(CustomerDashboardController::class)->show();
 })->name('dashboard.customer')->middleware('auth');
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'admin.role'])
+    ->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/shops', [AdminShopManagementController::class, 'index'])->name('shops.index');
+        Route::post('/shops/{shop}/toggle-status', [AdminShopManagementController::class, 'toggleStatus'])->name('shops.toggleStatus');
+        Route::post('/shops/{shop}/plan', [AdminShopManagementController::class, 'updatePlan'])->name('shops.updatePlan');
+        Route::post('/shops/{shop}/expiry', [AdminShopManagementController::class, 'updateExpiry'])->name('shops.updateExpiry');
+        Route::get('/service-requests', [AdminServiceRequestController::class, 'index'])->name('serviceRequests.index');
+        Route::get('/customers', [AdminCustomerManagementController::class, 'index'])->name('customers.index');
+        Route::delete('/customers/{customer}', [AdminCustomerManagementController::class, 'destroy'])->name('customers.destroy');
+    });
 
 Route::get('/customer/shops/{shop}', [CustomerShopController::class, 'show'])
     ->name('customer.shops.show')
