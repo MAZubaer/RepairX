@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ServiceCompletedMail;
+use App\Mail\ServiceInProgressMail;
 use App\Models\CustomerNotification;
 use App\Models\ServiceRecord;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Throwable;
 
 class ShopCustomerManagementController extends Controller
 {
@@ -97,7 +103,14 @@ class ShopCustomerManagementController extends Controller
             ]);
         }
 
+        if ($targetStatus === 'completed' && (blank($serviceRecord->shop_problem) || $serviceRecord->repair_cost === null)) {
+            return back()->withErrors([
+                'status' => 'Set identified problem and repair cost before marking as completed.',
+            ]);
+        }
+
         $serviceRecord->status = $targetStatus;
+        $this->queueCustomerStatusEmailIfNeeded($serviceRecord, $targetStatus);
         $serviceRecord->save();
 
         CustomerNotification::create([
@@ -146,5 +159,46 @@ class ShopCustomerManagementController extends Controller
             'sent from shop' => "Your {$model} has been sent from shop.",
             default => "Status updated for your {$model} request.",
         };
+    }
+
+    private function queueCustomerStatusEmailIfNeeded(ServiceRecord $serviceRecord, string $targetStatus): void
+    {
+        if (! in_array($targetStatus, ['in progress', 'completed'], true)) {
+            return;
+        }
+
+        $serviceRecord->loadMissing('customer.user');
+        $toEmail = $serviceRecord->customer?->user?->email;
+        if (! $toEmail) {
+            return;
+        }
+
+        if ($targetStatus === 'in progress' && $serviceRecord->in_progress_emailed_at === null) {
+            try {
+                Mail::to($toEmail)->queue(new ServiceInProgressMail($serviceRecord));
+                $serviceRecord->in_progress_emailed_at = Carbon::now();
+            } catch (Throwable $e) {
+                Log::warning('Failed to queue in-progress service email.', [
+                    'service_id' => $serviceRecord->service_id,
+                    'to_email' => $toEmail,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            return;
+        }
+
+        if ($targetStatus === 'completed' && $serviceRecord->completed_emailed_at === null) {
+            try {
+                Mail::to($toEmail)->queue(new ServiceCompletedMail($serviceRecord));
+                $serviceRecord->completed_emailed_at = Carbon::now();
+            } catch (Throwable $e) {
+                Log::warning('Failed to queue completed service email.', [
+                    'service_id' => $serviceRecord->service_id,
+                    'to_email' => $toEmail,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
     }
 }

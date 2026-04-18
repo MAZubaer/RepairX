@@ -24,6 +24,11 @@ class ServiceRecord extends Model
         'rating',
     ];
 
+    protected $casts = [
+        'in_progress_emailed_at' => 'datetime',
+        'completed_emailed_at' => 'datetime',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
