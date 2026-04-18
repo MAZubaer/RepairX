@@ -11,6 +11,8 @@ use App\Http\Controllers\CustomerShopController;
 use App\Http\Controllers\ShopCustomerManagementController;
 use App\Http\Controllers\CustomerUpdatesController;
 use App\Http\Controllers\CustomerNotificationController;
+use App\Http\Controllers\ShopBillingController;
+use App\Models\Shop;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -52,6 +54,17 @@ Route::post('/login', function (Request $request) {
 
     $user = Auth::user();
     if ($user->role === 'shop') {
+        $shop = Shop::where('user_id', $user->id)->first();
+
+        $isSubscriptionActive = $shop
+            && $shop->subscription_status === 'activated'
+            && $shop->expiry_date
+            && $shop->expiry_date->isFuture();
+
+        if (! $isSubscriptionActive) {
+            return redirect()->route('shop.pricing');
+        }
+
         return redirect()->route('dashboard.shop');
     }
 
@@ -101,31 +114,53 @@ Route::post('/customer/updates/{serviceRecord}/rating', [CustomerUpdatesControll
 
 Route::get('/dashboard/shop', function () {
     return app(ShopDashboardController::class)->show();
-})->name('dashboard.shop')->middleware('auth');
+})->name('dashboard.shop')->middleware(['auth', 'shop.subscription']);
+
+Route::get('/shop/pricing', [ShopBillingController::class, 'pricing'])
+    ->name('shop.pricing')
+    ->middleware('auth');
+
+Route::post('/shop/billing/checkout', [ShopBillingController::class, 'createCheckoutSession'])
+    ->name('shop.billing.checkout')
+    ->middleware('auth');
+
+Route::get('/shop/billing/success', [ShopBillingController::class, 'success'])
+    ->name('shop.billing.success')
+    ->middleware('auth');
+
+Route::post('/stripe/webhook', [ShopBillingController::class, 'webhook'])
+    ->name('stripe.webhook')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+
+Route::get('/stripe/webhook', function () {
+    return response()->json([
+        'message' => 'Stripe webhook endpoint is active. Send POST requests from Stripe.',
+    ]);
+});
 
 Route::get('/shop/customers', [ShopCustomerManagementController::class, 'show'])
     ->name('shop.customers.index')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::post('/shop/customers/{serviceRecord}/problem', [ShopCustomerManagementController::class, 'updateProblem'])
     ->name('shop.customers.problem.update')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::post('/shop/customers/{serviceRecord}/cost', [ShopCustomerManagementController::class, 'updateCost'])
     ->name('shop.customers.cost.update')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::post('/shop/customers/{serviceRecord}/status', [ShopCustomerManagementController::class, 'updateStatus'])
     ->name('shop.customers.status.update')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::get('/shop/edit', [ShopProfileController::class, 'edit'])
     ->name('shop.edit')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::post('/shop/edit', [ShopProfileController::class, 'update'])
     ->name('shop.update')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::get('/shop/images/{shopImage}', [ShopProfileController::class, 'showImage'])
     ->name('shop.images.show')
@@ -133,6 +168,6 @@ Route::get('/shop/images/{shopImage}', [ShopProfileController::class, 'showImage
 
 Route::delete('/shop/images/{shopImage}', [ShopProfileController::class, 'destroyImage'])
     ->name('shop.images.destroy')
-    ->middleware('auth');
+    ->middleware(['auth', 'shop.subscription']);
 
 // (debug route removed)

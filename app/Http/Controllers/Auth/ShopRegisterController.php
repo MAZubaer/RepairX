@@ -44,9 +44,9 @@ class ShopRegisterController extends Controller
                 return $user;
             });
 
-            // Log the user in and redirect to shop dashboard
+            // Log the user in and redirect to pricing for subscription activation.
             Auth::login($user);
-            return redirect()->route('dashboard.shop');
+            return redirect()->route('shop.pricing');
         } catch (\Exception $e) {
             \Log::error('Shop registration failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->withErrors(['server' => 'Unable to create shop account. ' . $e->getMessage()]);

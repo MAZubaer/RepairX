@@ -19,7 +19,7 @@
 
     <p style="margin-top: 14px;">
         <strong>Repair Cost:</strong>
-        ${{ number_format((float) $serviceRecord->repair_cost, 2) }}
+        ৳{{ number_format((float) $serviceRecord->repair_cost, 2) }}
     </p>
 
     <p style="margin-top: 16px;">Request ID: <strong>#{{ $serviceRecord->service_id }}</strong></p>

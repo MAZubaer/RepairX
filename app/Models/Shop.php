@@ -13,12 +13,21 @@ class Shop extends Model
 
     protected $fillable = [
         'user_id',
+        'stripe_customer_id',
+        'stripe_subscription_id',
         'subscription_status',
+        'subscription_plan',
         'expiry_date',
+        'current_period_end',
         'description',
         'motto',
         'services_provided',
         'rating',
+    ];
+
+    protected $casts = [
+        'expiry_date' => 'datetime',
+        'current_period_end' => 'datetime',
     ];
 
     public function user()

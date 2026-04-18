@@ -74,7 +74,7 @@ function displayCost(cost) {
   if (cost === null || cost === undefined || cost === '') return 'Not yet quoted'
   const value = Number(cost)
   if (Number.isNaN(value)) return String(cost)
-  return `$${value}`
+  return `৳${value}`
 }
 
 function statusLabel(status) {
