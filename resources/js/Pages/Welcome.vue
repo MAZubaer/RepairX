@@ -6,7 +6,7 @@
     <!-- Main -->
     <main class="flex-1 flex items-center justify-center">
       <div class="w-full max-w-3xl text-center px-6 py-12">
-        <img :src="logo" alt="RepairiX logo" class="mx-auto h-28 w-28 rounded-md shadow-sm bg-white" />
+        <img :src="logo" alt="RepairiX logo" class="mx-auto h-50 w-50 rounded-md shadow-sm bg-white" />
         <h1 class="mt-8 text-5xl font-extrabold text-dark">RepairiX</h1>
         <p class="mt-3 text-lg text-gray-600">Your All-in-One Repair Solution</p>
 

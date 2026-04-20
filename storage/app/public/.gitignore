@@ -1,2 +1,6 @@
 *
 !.gitignore
+
+# Allow committing shop_images and its contents
+!shop_images/
+!shop_images/**
