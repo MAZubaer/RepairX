@@ -18,7 +18,7 @@
           </div>
 
           <div>
-            <div class="rounded-lg border border-dashed border-gray-300 bg-white h-[280px] flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-[320px] aspect-square mx-auto lg:ml-auto rounded-lg border border-dashed border-gray-300 bg-white flex items-center justify-center overflow-hidden">
               <img v-if="logo?.url" :src="logo.url" alt="Shop Logo" class="h-full w-full object-cover" />
               <span v-else class="text-gray-400 text-lg">Shop Logo</span>
             </div>
@@ -46,7 +46,15 @@
               :key="img.image_id || idx"
               class="rounded-lg border border-dashed border-gray-300 bg-white h-[170px] overflow-hidden flex items-center justify-center"
             >
-              <img v-if="img.url" :src="img.url" :alt="`Image ${idx + 1}`" class="h-full w-full object-cover" />
+              <button
+                v-if="img.url"
+                type="button"
+                class="h-full w-full"
+                :aria-label="`Open Image ${idx + 1}`"
+                @click="openImageViewer(img.url)"
+              >
+                <img :src="img.url" :alt="`Image ${idx + 1}`" class="h-full w-full object-cover" />
+              </button>
               <span v-else class="text-gray-400">Image {{ idx + 1 }}</span>
             </div>
           </div>
@@ -90,6 +98,22 @@
       </div>
     </div>
 
+    <div v-if="showImageModal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" @click.self="closeImageViewer">
+      <button
+        type="button"
+        class="absolute top-4 right-4 text-white text-4xl leading-none"
+        aria-label="Close full image view"
+        @click="closeImageViewer"
+      >&times;</button>
+
+      <img
+        v-if="selectedImageUrl"
+        :src="selectedImageUrl"
+        alt="Shop full image"
+        class="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
+      />
+    </div>
+
     <footer class="h-12"></footer>
   </div>
 </template>
@@ -110,6 +134,8 @@ const page = usePage()
 const errors = computed(() => page.props.value.errors || {})
 
 const showModal = ref(false)
+const showImageModal = ref(false)
+const selectedImageUrl = ref('')
 const requestSentText = ref(props.requestSent ? 'Your request is sent.' : '')
 
 const form = useForm({
@@ -141,6 +167,16 @@ function openModal() {
 
 function closeModal() {
   showModal.value = false
+}
+
+function openImageViewer(url) {
+  selectedImageUrl.value = url
+  showImageModal.value = true
+}
+
+function closeImageViewer() {
+  showImageModal.value = false
+  selectedImageUrl.value = ''
 }
 
 function submitRequest() {

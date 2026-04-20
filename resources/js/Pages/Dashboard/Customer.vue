@@ -27,26 +27,26 @@
           <article
             v-for="shop in filteredShops"
             :key="shop.shop_id"
-            class="rounded-lg border border-gray-300 bg-white overflow-hidden shadow-sm"
+            class="h-full rounded-lg border border-gray-300 bg-white overflow-hidden shadow-sm flex flex-col"
           >
             <div class="h-52 bg-gray-100 border-b border-gray-200 flex items-center justify-center overflow-hidden">
               <img v-if="shop.logo_url" :src="shop.logo_url" :alt="`${shop.name} logo`" class="h-full w-full object-cover" />
               <span v-else class="text-gray-400">Shop Image</span>
             </div>
 
-            <div class="p-4 space-y-2">
-              <h3 class="text-3xl font-bold leading-tight">{{ shop.name }}</h3>
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <h3 class="text-3xl font-bold leading-tight shop-name">{{ shop.name }}</h3>
 
               <div class="flex items-center gap-2 text-xl">
                 <span class="text-yellow-500">{{ shopStars(shop.rating) }}</span>
                 <span class="text-gray-500">({{ Number(shop.rating || 0).toFixed(1) }})</span>
               </div>
 
-              <p class="text-gray-600 text-lg">📍 {{ shop.location }}</p>
+              <p class="text-gray-600 text-lg shop-location">📍 {{ shop.location }}</p>
 
               <a
                 :href="`/customer/shops/${shop.shop_id}`"
-                class="mt-3 w-full inline-flex justify-center rounded-md bg-primary text-white py-2.5 font-semibold hover:opacity-90"
+                class="mt-auto w-full inline-flex justify-center rounded-md bg-primary text-white py-2.5 font-semibold hover:opacity-90"
               >
                 View Details
               </a>
@@ -94,4 +94,6 @@ function shopStars(rating) {
 .form-input:focus{ outline:none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(20,184,166,0.08); }
 .form-input::placeholder{ color:#7a869a; }
 .search-input{ padding-left:3.1rem; }
+.shop-name{ min-height: 3.25rem; }
+.shop-location{ min-height: 3.5rem; }
 </style>

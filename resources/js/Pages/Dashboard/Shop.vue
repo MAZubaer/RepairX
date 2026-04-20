@@ -19,7 +19,7 @@
           </div>
 
           <div>
-            <div class="rounded-lg border border-dashed border-gray-300 bg-white h-[280px] flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-[320px] aspect-square mx-auto lg:ml-auto rounded-lg border border-dashed border-gray-300 bg-white flex items-center justify-center overflow-hidden">
               <img v-if="logo?.url" :src="logo.url" alt="Shop Logo" class="h-full w-full object-cover" />
               <span v-else class="text-gray-400 text-lg">Shop Logo</span>
             </div>
